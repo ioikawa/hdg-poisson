@@ -1,0 +1,26 @@
+// FreeFem++ code for solving the 2D Poisson equation
+// with homogeneous boundary condition by the HDG method.
+load "Element_PkEdge"
+macro Grad(u) [dx(u),dy(u)]//
+macro NGrad(u) (dx(u)*N.x+dy(u)*N.y)//
+macro eta() (8/lenEdge)//
+border G1 (t=0,1){x=t;y=0;label=1;}
+border G2 (t=0,1){x=1;y=t;label=2;}
+border G3 (t=0,1){x=1-t;y=1;label=3;}
+border G4 (t=0,1){x=0;y=1-t;label=4;}
+int n=4;
+mesh Th=buildmesh(G1(n)+G2(n)+G3(n)+G4(n));
+fespace V(Th,[P1dc,P1edge]);
+func f=2*pi^2*sin(pi*x)*sin(pi*y);
+// HDG method
+V [u,l], [v,m];
+solve hdgpoisson([u,l],[v,m])
+= int2d(Th)(Grad(u)'*Grad(v))
+  +intalledges(Th)(NGrad(v)*(l-u))
+  +intalledges(Th)(NGrad(u)*(m-v))
+  +intalledges(Th)(eta*(l-u)*(m-v))
+  -int2d(Th)(f*v)
+  +on(1,2,3,4,l=0);
+// Visualization
+plot(u,dim=3,fill=1,wait=1,value=1);
+plot(l,dim=3,fill=0,wait=1,value=1);
