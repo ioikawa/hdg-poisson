@@ -1,5 +1,5 @@
 // FreeFem++ code for solving the 2D Poisson equation
-// with homogeneous boundary condition by the HDG method.
+// with homogeneous Dirichlet boundary condition by the HDG method.
 load "Element_PkEdge"
 macro Grad(u) [dx(u),dy(u)]//
 macro NGrad(u) (dx(u)*N.x+dy(u)*N.y)//
